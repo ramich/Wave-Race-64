@@ -21,6 +21,48 @@
 
 ---
 
+## Progress Log
+
+> **Last updated:** 2026-06-01
+
+### ✅ Phase 1: Environment Setup & Toolchain — COMPLETE
+
+**Completed 2026-05-27**
+
+- Repository created: [WACOMalt/WaveRace64-Recomp](https://github.com/WACOMalt/WaveRace64-Recomp)
+- Git submodules added: N64Recomp, RT64, N64ModernRuntime
+- N64Recomp toolchain built successfully from source
+- Symbols extracted from decomp project: 756 base functions from linker scripts
+- Custom tools created:
+  - `generate_symbols.py` — decomp symbols → N64Recomp TOML format
+  - `auto_split_functions.py` — JAL scanning expanded 756 → 1,228 functions
+  - `find_missing_jal_targets.py` — validates all call targets are covered
+
+### ✅ Phase 2: Static Recompilation — COMPLETE
+
+**Completed 2026-06-01**
+
+- All **1,228 functions** successfully recompiled from MIPS binary to C
+- Output: 22 C source files (`funcs_0.c` – `funcs_21.c`), ~19.5MB total
+- Generated `funcs.h` (65KB header with all declarations)
+- Generated `lookup.cpp` (entrypoint + ROM name)
+- Generated `recomp_overlays.inl` (90KB overlay dispatch table)
+- Issues resolved during recompilation:
+  - **Entrypoint correction:** `0x80000400` → `0x80046800` (N64 header entrypoint vs actual game code entry)
+  - **`__osException` merge:** Two symbol files defined the same function; resolved by deduplication
+  - **Auto-split boundaries:** Edge cases in JAL-target scanning fixed for proper function boundary detection
+- All 19 overlays correctly identified and recompiled
+
+### 🔲 Phase 3: Runtime Integration — NEXT
+
+Target: Boot the recompiled game with N64ModernRuntime, reach Nintendo logo/title screen.
+
+### 🔲 Phases 4–8: Pending
+
+See detailed phase descriptions below.
+
+---
+
 ## 1. Executive Summary
 
 Wave Race 64 is a 1996 Nintendo 64 jet-ski racing game known for its groundbreaking water physics and wave simulation. This plan outlines the creation of a native PC port using **N64Recomp** — a static recompilation tool that translates N64 MIPS binary code directly into compilable C code.
@@ -120,32 +162,32 @@ The existing 65.71% decompilation (889/1,365 functions) provides:
 ## 4. Phase 1: Environment Setup & Toolchain (Weeks 1–2)
 
 ### 4.1 Repository Setup
-- [ ] Create `WACOMalt/WaveRace64-Recomp` repository on GitHub
-- [ ] Set up project structure (see Section 13)
-- [ ] Add N64Recomp, RT64, N64ModernRuntime as git submodules
-- [ ] Create CMakeLists.txt for the project
+- [x] Create `WACOMalt/WaveRace64-Recomp` repository on GitHub
+- [x] Set up project structure (see Section 13)
+- [x] Add N64Recomp, RT64, N64ModernRuntime as git submodules
+- [x] Create CMakeLists.txt for the project
 - [ ] Set up CI/CD (GitHub Actions) for Windows and Linux builds
 
 ### 4.2 Build N64Recomp Toolchain
-- [ ] Clone and build N64Recomp from source
-- [ ] Verify the recompiler runs on test ROMs
-- [ ] Document build process in project README
+- [x] Clone and build N64Recomp from source
+- [x] Verify the recompiler runs on test ROMs
+- [x] Document build process in project README
 
 ### 4.3 Build RT64
-- [ ] Clone RT64 (with submodules)
+- [x] Clone RT64 (with submodules)
 - [ ] Build RT64 for target platform (D3D12 on Windows, Vulkan on Linux)
 - [ ] Run RT64 test suite to verify GPU compatibility
 
 ### 4.4 Build N64ModernRuntime
-- [ ] Clone N64ModernRuntime
+- [x] Clone N64ModernRuntime
 - [ ] Build runtime library
 - [ ] Understand API for game-specific integration
 
 ### 4.5 Symbol Preparation
-- [ ] Export all symbols from the decomp project into N64Recomp-compatible format
-- [ ] Merge `symbol_addrs.txt`, `audio_symbols.txt`, `libultra_symbols.txt`, `ovl_symbols.txt`
-- [ ] Create a master symbol list with addresses and sizes
-- [ ] Identify any gaps in function boundary coverage
+- [x] Export all symbols from the decomp project into N64Recomp-compatible format
+- [x] Merge `symbol_addrs.txt`, `audio_symbols.txt`, `libultra_symbols.txt`, `ovl_symbols.txt`
+- [x] Create a master symbol list with addresses and sizes
+- [x] Identify any gaps in function boundary coverage (JAL auto-split: 756 → 1,228 functions)
 
 ### Deliverable: Toolchain builds, symbols prepared, project skeleton ready
 
@@ -154,10 +196,10 @@ The existing 65.71% decompilation (889/1,365 functions) provides:
 ## 5. Phase 2: Static Recompilation (Weeks 2–4)
 
 ### 5.1 TOML Configuration
-- [ ] Create `waverace64.toml` configuration file for N64Recomp
-- [ ] Define ROM entry point (`0x80000400`)
-- [ ] Define memory segments from decomp linker scripts
-- [ ] Configure all 19 overlays with ROM/VRAM addresses:
+- [x] Create `waverace64.toml` configuration file for N64Recomp
+- [x] Define ROM entry point (corrected: `0x80046800`)
+- [x] Define memory segments from decomp linker scripts
+- [x] Configure all 19 overlays with ROM/VRAM addresses:
   ```
   Overlay mappings from ovl_table.c:
   ovl_i0:  ROM 0x1B3EC0 → VRAM 0x802C5800
@@ -177,24 +219,24 @@ The existing 65.71% decompilation (889/1,365 functions) provides:
   ovl_i14: ROM 0x1CF180 → VRAM 0x802C5800
   ovl_i15: ROM 0x1CFB60 → VRAM 0x802C5800
   ```
-- [ ] Define libultra function stubs (OS functions to replace with host implementations)
-- [ ] Define ignored/patched functions
+- [x] Define libultra function stubs (OS functions to replace with host implementations)
+- [x] Define ignored/patched functions
 
 ### 5.2 Initial Recompilation Run
-- [ ] Run N64Recomp on `baserom.us.rev1.z64` with the TOML config
-- [ ] Fix any recompiler errors (usually unrecognized instructions or function boundary issues)
-- [ ] Verify generated C code compiles with the native compiler
-- [ ] Count generated functions vs expected (should be ~1,365)
+- [x] Run N64Recomp on `baserom.us.rev1.z64` with the TOML config
+- [x] Fix any recompiler errors (entrypoint correction, `__osException` merge, function boundaries)
+- [x] Verify generated C code compiles with the native compiler
+- [x] Count generated functions: **1,228** (after JAL auto-split from 756 base symbols)
 
 ### 5.3 Overlay Recompilation
-- [ ] Verify all 19 overlays are correctly identified and recompiled
-- [ ] Test overlay function table generation
-- [ ] Verify address space sharing works correctly (all overlays at 0x802C5800)
+- [x] Verify all 19 overlays are correctly identified and recompiled
+- [x] Test overlay function table generation (`recomp_overlays.inl`, 90KB)
+- [x] Verify address space sharing works correctly (all overlays at 0x802C5800)
 
 ### 5.4 Function Table Generation
-- [ ] Generate the function lookup table for indirect calls (jalr targets)
-- [ ] Verify jump table handling for switch statements
-- [ ] Test indirect function call resolution
+- [x] Generate the function lookup table for indirect calls (jalr targets)
+- [x] Verify jump table handling for switch statements
+- [x] Test indirect function call resolution
 
 ### Deliverable: All game code recompiled to C, compiles to native binary
 
@@ -628,5 +670,6 @@ Functions that must be replaced with host-side implementations:
 
 ---
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-06-01*
 *Based on Wave Race 64 decomp analysis at 65.71% (889/1,365 functions)*
+*Phase 2 (static recompilation) completed — 1,228 functions recompiled to C*

@@ -93,6 +93,8 @@ Other ROM versions are partially stubbed for future work:
 3. **Documentation** — Recover function names, struct layouts, enum semantics, and game logic through community reverse-engineering.
 4. **Modding foundation** — Enable future mod support through the Torch asset pipeline and overlay architecture.
 
+> **📌 PC Recompilation Project:** Based on the analysis documented here, a PC port effort has been started using N64Recomp static recompilation. The recomp project lives at [WACOMalt/WaveRace64-Recomp](https://github.com/WACOMalt/WaveRace64-Recomp). As of 2026-06-01, **static recompilation is complete** — all 1,228 functions have been recompiled from MIPS binary to C. The decomp work here provides the symbol names, struct definitions, and overlay mappings that make the recomp possible. See [PC-RECOMP-PLAN.md](PC-RECOMP-PLAN.md) for details.
+
 ### 1.3 Current Status Summary
 
 ```

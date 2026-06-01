@@ -1,5 +1,19 @@
 # Wave Race 64 Decompilation — Remaining Work (DECOMP-RESUME)
 
+> ## 📌 Project Pivot: PC Recompilation
+>
+> **As of 2026-05-27, the primary effort has pivoted to PC Recompilation** using the [N64Recomp](https://github.com/N64Recomp/N64Recomp) static recompilation approach. The recomp project lives at **[WACOMalt/WaveRace64-Recomp](https://github.com/WACOMalt/WaveRace64-Recomp)**.
+>
+> **Static recompilation is complete** (Phase 2) — all 1,228 functions have been recompiled from MIPS binary to native C code. The next step is runtime integration (Phase 3).
+>
+> The decomp work documented below **remains valuable** for:
+> - **Symbol names** — 889 named functions feed directly into the recomp symbol table
+> - **Struct definitions** — Player, audio, controller, and game state structs inform runtime integration
+> - **Overlay mappings** — All 19 overlays are fully mapped and used in recomp configuration
+> - **Mod support** — Named functions enable function-level hooking in the recompiled binary
+>
+> However, completing the remaining 476 functions to 100% is **no longer the critical path** to a playable PC port. The recomp approach handles undecompiled functions automatically by recompiling directly from the ROM binary.
+
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
