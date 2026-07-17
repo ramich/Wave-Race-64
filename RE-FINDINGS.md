@@ -71,3 +71,26 @@ rarely prove "the game re-reads this struct every frame", but the port did.
 - `gDPSetScissor(8,20,310,218)`-building functions: `func_80093DBC`
   (code_4C750.c, matched) plus per-scene overlay copies; the wave-mesh passes
   set the same scissor again from branched sub-DLs.
+
+## Course-world rendering: 18-sector precomputed visibility (PVS)
+
+- **`func_8006E674` is the course-world renderer** (terrain, shore strip,
+  banner, fence, beach crowd) — proven by stubbing it (`jr $ra` patch): the
+  course-select preview map loses its center content and races cannot start.
+  It also renders the course preview on the COURSE SELECT screen.
+- Inside it (vram `0x8006F0D0..0x8006F19C`): `sector =
+  clamp(trunc(viewAngle / 360.0f * 18.0f), 0..17)` — the camera yaw picks one
+  of **18 x 20-degree sectors**; a mirrored branch (`sector >= 10 -> sector =
+  18 - sector`) then selects segment-1 course-data pointer sets (on Sunny
+  Beach: `0x0102CC58/CC70/CD90/CD78` vs `0x0102CCE8/CD00/CE20`). The world
+  geometry per view direction is PREBAKED for the original 45-degree 4:3
+  view — there is no runtime clip constant; content outside the stock view
+  simply belongs to the neighbor sector's data set. (This defeated every
+  widescreen "find the cull constant" hunt: nothing exists to widen.)
+- Frame pass roles established by stub bisection (1P chain in
+  `func_8009328C`): `func_8008FB74` wave mesh; `func_8006E674` course world;
+  `func_800687A4` player/jet-ski; `func_800ADF90` course objects
+  (ramps/signs; angle cull `func_800ADE14`, threshold 100.0f at
+  `0x800ADF54`); **`func_80068538` buoys** (not part of the object system);
+  `func_8007FFA8` / `func_80069594` / `func_800B305C` / `func_8008BD2C`
+  subtle/no visible change in a race frame.
