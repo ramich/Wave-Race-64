@@ -307,6 +307,12 @@ Gfx* func_8008CFEC(Gfx* gdl) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008E794.s")
 
+// Wave-mesh display-list builder: generates the detail-water grid every
+// frame. Reads the grid config at D_800DA8B4 {flag, gridRows=19,
+// gridCols=35, Vp viewports (incl. splitscreen variants)} and samples the
+// water simulation (func_8004C998/func_8004C1D0). Runtime-verified: poking
+// rows/cols live resizes the rendered water grid (see RE-FINDINGS.md).
+// Call chain: func_8008FB74 -> func_800949B8 -> Draw_WaterEffects.
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_43DA0/func_8008FB74.s")
 
 Gfx* Draw_WaterEffects(Gfx* gdl) {

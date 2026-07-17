@@ -1531,6 +1531,11 @@ Gfx* func_8009E794(Gfx* dl, s32 arg1) {
 
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A2B24.s")
 
+// In-race camera setup. Runtime-verified (RT64 projection telemetry): the
+// 45.0f constant at 0x800A54E4 inside this function is THE live race
+// camera fovy; the sibling 45.0f sites at 0x800A5648/0x800A57AC/0x800A57B8
+// are believed to be the other C-button view modes. Camera struct offset
+// unk88 = fovy in degrees throughout this file (see RE-FINDINGS.md).
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/game/code_52CD0/func_800A52D8.s")
 
 void func_800C1E0C(f32);

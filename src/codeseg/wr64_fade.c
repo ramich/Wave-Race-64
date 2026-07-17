@@ -295,6 +295,10 @@ void func_801E76C0(FadeTransition* fade) {
     }
 }
 
+// Draws the fullscreen atmosphere/tint overlay: calls func_801E7C58 with
+// the view rect as immediates - two variants, (8,20)-(310,218) and
+// (8,12)-(310,228) - and RGBA from four s16 globals around 0x80228A20
+// (runtime-verified, see RE-FINDINGS.md).
 // https://decomp.me/scratch/udOjy 86.02%
 #pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/codeseg/wr64_fade/func_801E7908.s")
 
